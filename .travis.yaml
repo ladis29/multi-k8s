@@ -1,0 +1,7 @@
+sudo: required
+services:
+  - docker
+before_install:
+  - curl https://sdk.cloud.google.com | bash > /dev/nul;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl

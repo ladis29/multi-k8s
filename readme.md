@@ -27,10 +27,49 @@ Essa documentação tem o objetivo de criar um projeto e rodá-lo em um cluster 
 
 # Preparando o GITLAB/TRAVIS
 
-Nesta etapa prepararemos a parte de CI/CD do projeto, seguiremos o seguinte cronograma:
+Nesta etapa começaremos a preparar a parte de CI/CD do projeto, seguiremos o seguinte cronograma:
 <body>
 	<center>	
 		<img src="./pictures/preparando_travis.png" width="500" height="300">
 	</center>
 </body>
 
+- A primeira necessidade é instalar o CLI do GCP SDK no projeto, para isso colocaremos na seção `before_install` do nosso arquivo de configuração do projeto(`.gitlab-ci.yaml` ou `.travis.yml`) a seguintes linhas de comando:
+
+```sh
+...
+  - curl https://sdk.cloud.google.com | bash > /dev/null
+  - source $HOME/google-cloud-sdk/path.bash.inc
+...
+```
+
+- Precisamos também instalar o `kubectl` no nosso cluster para que possamos rodar comandos direto da interface CLI do cluster, para ainda na seção `before_install` do nosso arquivo de configuração do projeto iremos inserir a seguinte linha:
+
+```sh
+...
+  - gcloud components update kubectl
+...
+```
+ - O próximo passo é passar as informações de login do GCP para o projeto, faremos isso adicionando a linha:
+ ```sh
+...
+  - gcloud auth activate-service-account --key-file service-account.json
+...
+```
+
+### Criando a conta de serviço para o projeto e adicionando ao TRAVIS/GITLAB
+
+<body>
+	<center>	
+		<img src="./pictures/credenciais.png" width="300" height="200">
+	</center>
+</body>
+
+ - No menu de navegação do GCP ir até a seção `IAM & admin`
+ - Na página que se abrirá, lado esquerdo da tela selecionar `Service accounts`
+ - Na parte central, superior clicar em `+CREATE SERVICE ACCOUNT`
+ <body>
+	<center>	
+		<img src="./pictures/create_service_account.png" width="600" height="80">
+	</center>
+</body>
