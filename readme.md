@@ -1,6 +1,6 @@
 Essa documentação tem o objetivo de criar um projeto e rodá-lo em um cluster kubernetes no GCP do zero. A sequência adotada será a seguinte:
 
-<img src="/pictures/objetivo.png">
+<img src="/pictures/objetivo.png" width="200" height="200">
 
 
 # Criando um projeto no GCP
