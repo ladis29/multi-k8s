@@ -1,7 +1,9 @@
 Essa documentação tem o objetivo de criar um projeto e rodá-lo em um cluster kubernetes no GCP do zero. A sequência adotada será a seguinte:
-
-<img src="/pictures/objetivo.png" width="300" height="300">
-
+<body>
+	<center>
+        <img src="./pictures/objetivo.png" width="400" height="200">
+	</center>
+</body>
 
 # Criando um projeto no GCP
 
@@ -25,4 +27,10 @@ Essa documentação tem o objetivo de criar um projeto e rodá-lo em um cluster 
 
 # Preparando o GITLAB/TRAVIS
 
+Nesta etapa prepararemos a parte de CI/CD do projeto, seguiremos o seguinte cronograma:
+<body>
+	<center>	
+		<img src="./pictures/preparando_travis.png" width="500" height="300">
+	</center>
+</body>
 
