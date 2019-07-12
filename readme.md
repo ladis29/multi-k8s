@@ -73,3 +73,46 @@ Nesta etapa começaremos a preparar a parte de CI/CD do projeto, seguiremos o se
 		<img src="./pictures/create_service_account.png" width="350" height="80">
 	</center>
 </body>
+
+- Na janela que abrir preencher as informações de `nome`, `service account ID`e `description` e clicar em `Create`
+- Na próxima página, no item `Select a role` escolher `Kubernetes Engine` -> `Kubernetes Engine Admin` e clicar em `CONTINUE`
+<body>
+	<center>	
+		<img src="./pictures/role.png" width="200" height="130">
+	</center>
+</body>
+
+**NOTA** é possível criar várias roles diferentes.
+
+- Na próxima página clicar em `+ CREATE KEY`, selecionar o formato `JSON` e `CREATE`
+
+**Será criada uma chave para ser baixada para a estação local**
+
+**IMPORTANTE:**
+Esta chave contém informações sensíveis do projeto e não deve, em hipótese alguma ser exposta. No próximo passo iremos criptografar esta chave com o intuito de proteger seu conteúdo no nosso repositório.
+
+### Download e Instalação do Travis CLI para criptografar a chave recém baixada
+
+Essa ferramenta do TRAVIS requer o ruby instalado no sistema. Para que não seja preciso a instalação do ruby faremos isso através de um container docker. Os comandos abaixo servem para executar esse passo.
+
+- Baixe o container `ruby` e compartilhe o diretório local para poder acessar a chave json.
+```sh
+docker run -it -v $(pwd):/app ruby:2.3 sh
+```
+- Vá para dentro do diretório app do container
+```sh
+cd app/
+```
+- Instale o `Travis CLI` no container
+```sh
+gem install travis
+```
+- Faça login na sua conta do travis
+```sh
+travis login
+```
+- Criptografe o arquivo da chave json(renomeada para `service-account.json`) baixado do GCP
+```sh
+travis encrypt-file app/service-account.json -r <owner>/<repo> 
+```
+- A saída deste último comando irá gerar um novo comando que iremos copiar para colocar no início da seção `before_install` do nosso `.travis.yaml`.
