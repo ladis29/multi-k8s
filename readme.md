@@ -70,6 +70,6 @@ Nesta etapa começaremos a preparar a parte de CI/CD do projeto, seguiremos o se
  - Na parte central, superior clicar em `+CREATE SERVICE ACCOUNT`
  <body>
 	<center>	
-		<img src="./pictures/create_service_account.png" width="600" height="80">
+		<img src="./pictures/create_service_account.png" width="350" height="80">
 	</center>
 </body>
