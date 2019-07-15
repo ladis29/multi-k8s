@@ -10,7 +10,7 @@ docker push ladis29/multi-client:$SHA
 docker push ladis29/multi-server:$SHA
 docker push ladis29/multi-worker:$SHA
 
-~/google-cloud-sdk/bin/kubectl apply -f k8s
-~/google-cloud-sdk/bin/kubectl set image deployments/server-deployment server=ladis29/multi-server:$SHA
-~/google-cloud-sdk/bin/kubectl set image deployments/client-deployment client=ladis29/multi-client:$SHA
-~/google-cloud-sdk/bin/kubectl set image deployments/worker-deployment worker=ladis29/multi-worker:$SHA
+./google-cloud-sdk/bin/kubectl apply -f k8s
+./google-cloud-sdk/bin/kubectl set image deployments/server-deployment server=ladis29/multi-server:$SHA
+./google-cloud-sdk/bin/kubectl set image deployments/client-deployment client=ladis29/multi-client:$SHA
+./google-cloud-sdk/bin/kubectl set image deployments/worker-deployment worker=ladis29/multi-worker:$SHA
