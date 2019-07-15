@@ -116,14 +116,14 @@ travis login
 - Criptografe o arquivo da chave json(renomeada para `service-account.json`) baixado do GCP
 ```sh
 ...
-travis encrypt-file app/service-account.json -r <owner>/<repo>
+travis encrypt-file service-account.json -r <owner>/<repo>
 ...
 ```
 - A saída deste último comando irá gerar um novo comando, semelhante ao comando abaixo, que iremos copiar para colocar no início da seção `before_install` do nosso `.travis.yaml`.
 
 ```sh
 ...
-- openssl aes-256-cbc -K $encrypted_42099b4af021_key -iv $encrypted_42099b4af021_iv -in service-account.json.enc -out app/service-account.json -d
+- openssl aes-256-cbc -K $encrypted_42099b4af021_key -iv $encrypted_42099b4af021_iv -in service-account.json.enc -out service-account.json -d
 ...
 ```
 
