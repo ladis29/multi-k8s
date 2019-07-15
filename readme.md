@@ -18,7 +18,9 @@ Essa documentação tem o objetivo de criar um projeto e rodá-lo em um cluster 
 
 - No menu de navegação ir até a seção `COMPUTE` e selecionar o item `Kubernetes Engine`
 - Irá abrir uma nova página carregando a função no projeto, pode demorar um pouco.
+<p>
     **NOTA** no canto superior direito, próximo à imagem do titular da conta haverá um ícone com a imagem de um sino que terá uma barra de progresso girando em torno. Essa informação é mais confiável do que a informação de progresso que aparece no centro da tela.
+</p>
 - Assim que o serviço estiver habilitado podemos clicar em `Create Cluster` na janela que terá no centro da tela.
 - Ná página que abrirá selecionar as características desejadas para o novo cluster, ao concluir clique em create.
 - Assim que a criação do cluster for concluída vc poderá acessar o cluster clicando nele
@@ -115,4 +117,49 @@ travis login
 ```sh
 travis encrypt-file app/service-account.json -r <owner>/<repo> 
 ```
-- A saída deste último comando irá gerar um novo comando que iremos copiar para colocar no início da seção `before_install` do nosso `.travis.yaml`.
+- A saída deste último comando irá gerar um novo comando, semelhante ao comando abaixo, que iremos copiar para colocar no início da seção `before_install` do nosso `.travis.yaml`.
+
+```sh
+- openssl aes-256-cbc -K $encrypted_42099b4af021_key -iv $encrypted_42099b4af021_iv -in service-account.json.enc -out app/service-account.json -d
+```
+
+### Informando o caminho para o projeto no GCP
+- Agora precisaremos informar ao travis qual o caminho para o projeto no GCP que deverá ser seguido. Ainda na seção `before_install` iremos passar o seguinte comando:
+```sh
+- gcloud config set project <Project ID>
+```
+<body>
+	<center>	
+		<img src="./pictures/project_id.png" width="300" height="100">
+	</center>
+</body>
+
+```sh
+- gcloud config set compute/zone <AZ do cluster>
+```
+<body>
+	<center>	
+		<img src="./pictures/cluster_location.png" width="300" height="100">
+	</center>
+</body>
+
+```sh
+- gcloud container clusters get-credentials <nome do cluster>
+```
+<body>
+	<center>	
+		<img src="./pictures/cluster_name.png" width="300" height="100">
+	</center>
+</body>
+
+### Informando o repositório de imagens
+**NOTA**<br>
+Para a confecção dessa documentação foi utilizado um repositório público.
+<p>
+- Ainda na seção `before_install` iremos passar o seguinte comando:
+
+```sh
+- echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+```
+**OBS.:** As variáveis `$DOCKER_PASSWORD` e `$DOCKER_USERNAME` devem ser informadas no travis/gitlab como variáveis de ambiente.
+
