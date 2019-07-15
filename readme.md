@@ -12,7 +12,7 @@ Essa documentação tem o objetivo de criar um projeto e rodá-lo em um cluster 
 - Clicar em `Projects`, irá abrir uma nova janela, clicar em "NEW PROJECT" dar o nome ao projeto e criar
 - Habilitar a Cobrança para o projeto recém criado
     - No menu de navegação(Canto superior esquerdo) encontrar e clicar no item `Billing`
-    - Em Billing selecionar`Link a billing account`, selecionar a conta de cobrança para o projeto e clicar em `SET ACCOUNT`
+    - Em Billing selecionar `Link a billing account`, selecionar a conta de cobrança para o projeto e clicar em `SET ACCOUNT`
 
 # Criando o cluster kubernetes
 
@@ -115,18 +115,24 @@ travis login
 ```
 - Criptografe o arquivo da chave json(renomeada para `service-account.json`) baixado do GCP
 ```sh
-travis encrypt-file app/service-account.json -r <owner>/<repo> 
+...
+travis encrypt-file app/service-account.json -r <owner>/<repo>
+...
 ```
 - A saída deste último comando irá gerar um novo comando, semelhante ao comando abaixo, que iremos copiar para colocar no início da seção `before_install` do nosso `.travis.yaml`.
 
 ```sh
+...
 - openssl aes-256-cbc -K $encrypted_42099b4af021_key -iv $encrypted_42099b4af021_iv -in service-account.json.enc -out app/service-account.json -d
+...
 ```
 
 ### Informando o caminho para o projeto no GCP
 - Agora precisaremos informar ao travis qual o caminho para o projeto no GCP que deverá ser seguido. Ainda na seção `before_install` iremos passar o seguinte comando:
 ```sh
+...
 - gcloud config set project <Project ID>
+...
 ```
 <body>
 	<center>	
@@ -135,7 +141,9 @@ travis encrypt-file app/service-account.json -r <owner>/<repo>
 </body>
 
 ```sh
+...
 - gcloud config set compute/zone <AZ do cluster>
+...
 ```
 <body>
 	<center>	
@@ -144,7 +152,9 @@ travis encrypt-file app/service-account.json -r <owner>/<repo>
 </body>
 
 ```sh
+...
 - gcloud container clusters get-credentials <nome do cluster>
+...
 ```
 <body>
 	<center>	
@@ -156,10 +166,89 @@ travis encrypt-file app/service-account.json -r <owner>/<repo>
 **NOTA**<br>
 Para a confecção dessa documentação foi utilizado um repositório público.
 <p>
+
 - Ainda na seção `before_install` iremos passar o seguinte comando:
 
 ```sh
+...
 - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+...
 ```
 **OBS.:** As variáveis `$DOCKER_PASSWORD` e `$DOCKER_USERNAME` devem ser informadas no travis/gitlab como variáveis de ambiente.
 
+# *Atenção*
+O restante da configuração do aruqivo de CI(env, testes, execução...) depende do deploy que se deseja rodar. As considerações da etapa a seguir são expecíficas do deploy implementado para teste.
+
+### Testando e construindo a aplicação
+
+Para nos certificarmos do funcionamento do deploy iremos rodar um teste automatizado antes de subirmos o projeto no cluster, portanto como último comando da seção `before_install` teremos:
+
+```sh
+...
+- docker build -t ladis29/react-test -f ./client/Dockerfile.dev ./client
+...
+```
+
+Iremos agora criar a seção `script` do nosso CI e rodar o comando de execução.
+
+```sh
+...
+script:
+  - docker run -e CI=true ladis29/react-test npm test -- --coverage
+...
+```
+- Criaremos então o nosso deploy baseado na seção `script`
+```sh
+...
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
+...
+```
+
+### *deploy.sh*
+Este arquivo foi criado para executar a construção das imagens e exportação das mesmas para o registro de imagem selecionado, porém para evitar que as imagens sempre tenham a tag `latest` iremos criar a tag em cada interação com o GIT usando a variável `SHA` gerada.
+Para isso iremos criar a variável de ambiente **NO ARQUIVO CI** informando essa variável:
+
+```sh
+...
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+...
+```
+Como o processo é todo automatizado não será possível responder à eventuais "prompts" gerados no processo, para tanto vamos inserir na seção `env - global` o comando para desabilitar os eventuais prompts que possam surgir.
+
+```sh
+...
+- CLOUDSDK_CORE_DISABLE_PROMPTS=1
+...
+```
+## Váriáveis específicas do projeto
+Algumas variáveis desse projeto serão, **à título de estudo** , informadas ao cluster via linha de comando através da ferramenta GCP CLOUD SHELL.
+
+- No console do projeto no GCP iremos clicar sobre o ícone da ferramenta na parte superior direita da janela:
+<body>
+	<center>	
+		<img src="./pictures/cloud_shell.png" width="250" height="100">
+	</center>
+</body>
+
+Para que possamos usar o cloud shell para aplicar comandos no nosso cluster/projeto teremos que informar no shell as mesmas variáveis informadas no nosso arquivo de CI. Para isso, nesse caso, iremos inserir os comandos:
+```sh
+$ gcloud config set project	multi-k8s-246813
+$ gcloud config set compute/zone southamerica-east1-b
+$ gcloud container clusters get-credentials multi-k8s
+
+```
+## NGINX
+
+A configuração nginx usada nesse projeto terá por base a configuração recomendada pelo repositório https://github.com/kubernetes/ingress-nginx
+
+- No topo da página do repositório temos o link para a página do projeto: https://kubernetes.github.io/ingress-nginx/
+
+- No cabeçalho da página encontramos a seção `Deployment` que contém o guia para vários deploys diferentes.
+
+- No caso deste projeto usaremos o `helm`. Para isso iremos instalar o helm via GCP CLOUD SHELL como recomendado na documentação oficial da ferramenta (https://helm.sh/docs/using_helm/#from-script). depois configuraremos o `Tiller` com base na mesma documentação(https://helm.sh/docs/using_helm/#gke).
