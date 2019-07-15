@@ -40,7 +40,7 @@ Nesta etapa começaremos a preparar a parte de CI/CD do projeto, seguiremos o se
 
 ```sh
 ...
-  - curl https://sdk.cloud.google.com | bash > /dev/null
+  - curl https://sdk.cloud.google.com | bash -s -- --disable-prompts > /dev/null;
   - source $HOME/google-cloud-sdk/path.bash.inc
 ...
 ```
