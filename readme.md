@@ -243,6 +243,30 @@ $ gcloud config set compute/zone southamerica-east1-b
 $ gcloud container clusters get-credentials multi-k8s
 
 ```
+## HELM
+Instalaremos as ferramenta `helm` e `Tiller` no cluster para facilitar parte do processo de gerenciamento do cluster.
+
+Para isso iremos instalar o helm via GCP CLOUD SHELL como recomendado na documentação oficial da ferramenta (https://helm.sh/docs/using_helm/#from-script) .
+
+**NOTA -** Não rodar o helm init ainda.
+
+Em um cluster GCP o RBAC é automaticamente instalado e ativado na criação do cluster. 
+
+- Para que possamos instalar o Tiller e permitir sua correta execução teremos que criar a `Service Account`  par ao tiller através do comando:
+```sh
+kubectl create serviceaccount --namespace kube-system tiller
+```
+
+- Com a service account criada vamos definir o acesso dessa service account criando o `ClusterRoleBinding` com o comando:
+```sh
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+```
+- Rodar o helm init informando o service account do tiller
+```sh
+helm init --service-account tiller --upgrade
+```
+
+
 ## NGINX
 
 A configuração nginx usada nesse projeto terá por base a configuração recomendada pelo repositório https://github.com/kubernetes/ingress-nginx
@@ -251,4 +275,7 @@ A configuração nginx usada nesse projeto terá por base a configuração recom
 
 - No cabeçalho da página encontramos a seção `Deployment` que contém o guia para vários deploys diferentes.
 
-- No caso deste projeto usaremos o `helm`. Para isso iremos instalar o helm via GCP CLOUD SHELL como recomendado na documentação oficial da ferramenta (https://helm.sh/docs/using_helm/#from-script). depois configuraremos o `Tiller` com base na mesma documentação(https://helm.sh/docs/using_helm/#gke).
+- No caso deste projeto usaremos o `helm`.
+```sh
+helm install stable/nginx-ingress --name my-nginx --set rbac.create=true
+```
