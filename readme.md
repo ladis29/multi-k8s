@@ -248,6 +248,12 @@ Instalaremos as ferramenta `helm` e `Tiller` no cluster para facilitar parte do 
 
 Para isso iremos instalar o helm via GCP CLOUD SHELL como recomendado na documentação oficial da ferramenta (https://helm.sh/docs/using_helm/#from-script) .
 
+```sh
+$ curl -LO https://git.io/get_helm.sh
+$ chmod 700 get_helm.sh
+$ ./get_helm.sh
+```
+
 **NOTA -** Não rodar o helm init ainda.
 
 Em um cluster GCP o RBAC é automaticamente instalado e ativado na criação do cluster. 
