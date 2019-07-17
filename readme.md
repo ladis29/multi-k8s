@@ -99,24 +99,24 @@ Essa ferramenta do TRAVIS requer o ruby instalado no sistema. Para que não seja
 
 - Baixe o container `ruby` e compartilhe o diretório local para poder acessar a chave json.
 ```sh
-docker run -it -v $(pwd):/app ruby:2.3 sh
+$ docker run -it -v $(pwd):/app ruby:2.3 sh
 ```
 - Vá para dentro do diretório app do container
 ```sh
-cd app/
+# cd app/
 ```
 - Instale o `Travis CLI` no container
 ```sh
-gem install travis
+# gem install travis
 ```
 - Faça login na sua conta do travis
 ```sh
-travis login
+# travis login
 ```
 - Criptografe o arquivo da chave json(renomeada para `service-account.json`) baixado do GCP
 ```sh
 ...
-travis encrypt-file service-account.json -r <owner>/<repo>
+# travis encrypt-file service-account.json -r <owner>/<repo>
 ...
 ```
 - A saída deste último comando irá gerar um novo comando, semelhante ao comando abaixo, que iremos copiar para colocar no início da seção `before_install` do nosso `.travis.yaml`.
@@ -260,16 +260,16 @@ Em um cluster GCP o RBAC é automaticamente instalado e ativado na criação do 
 
 - Para que possamos instalar o Tiller e permitir sua correta execução teremos que criar a `Service Account`  par ao tiller através do comando:
 ```sh
-kubectl create serviceaccount --namespace kube-system tiller
+$ kubectl create serviceaccount --namespace kube-system tiller
 ```
 
 - Com a service account criada vamos definir o acesso dessa service account criando o `ClusterRoleBinding` com o comando:
 ```sh
-kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+$ kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 ```
 - Rodar o helm init informando o service account do tiller
 ```sh
-helm init --service-account tiller --upgrade
+$ helm init --service-account tiller --upgrade
 ```
 
 
@@ -283,5 +283,30 @@ A configuração nginx usada nesse projeto terá por base a configuração recom
 
 - No caso deste projeto usaremos o `helm`.
 ```sh
-helm install stable/nginx-ingress --name my-nginx --set rbac.create=true
+$ helm install stable/nginx-ingress --name my-nginx --set rbac.create=true
 ```
+
+# Skaffold
+
+O skaffold essencialmente, explicando de uma amneira bem sucinta, é uma ferramenta de linha de comandos, separada do kubernetes, mas feita para ser usada com o kubernetes com o intuito de facilitar o desenvolvimento mapeando/compartilhando um volume local com o cluster(assim como é feito com o docker).
+
+Ele monitora o diretório local indicado e assim que percebe alguma alteração ele as reflete no cluster, pode fazer isso de duas maneiras diferentes:
+- Reconstruindo completamente a imagem que sofreu alterações(docker level)
+- Injetando os arquivos alterados no pod de destino e promovendo uma atualização do pod(porém o pod deve estar rodando de maneira a perceber a atualização e se auto-atualizar).
+
+
+### Instalação
+
+A instalação do skaffold é feita na estação de trabalho local e depende do sistema operacional em que iremos efetuá-la. Instruções mais detalhadas para a instalação são encontradas em https://skaffold.dev/docs/getting-started.
+
+Para verificar se o skaffold está instalado na sua estação rode o comando
+```sh
+$ skaffold version
+```
+
+
+### Config File
+
+No diretório raiz do projeto deverá ser criado um `yaml` com as configurações do skaffold chamado de `skaffold.yaml`.
+
+Todas as referências para a criação deste arquivo estão na página da ferramenta https://skaffold.dev/docs/references/yaml
