@@ -311,4 +311,4 @@ No diretório raiz do projeto deverá ser criado um `yaml` com as configuraçõe
 
 Todas as referências para a criação deste arquivo estão na página da ferramenta https://skaffold.dev/docs/references/yaml
 
-teste de integração git x code
+teste2
