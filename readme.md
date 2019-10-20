@@ -310,5 +310,3 @@ $ skaffold version
 No diretório raiz do projeto deverá ser criado um `yaml` com as configurações do skaffold chamado de `skaffold.yaml`.
 
 Todas as referências para a criação deste arquivo estão na página da ferramenta https://skaffold.dev/docs/references/yaml
-
-teste2
